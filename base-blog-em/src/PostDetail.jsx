@@ -31,6 +31,7 @@ export function PostDetail({ post }) {
   );
 
   const deleteMutation = useMutation((postId) => deletePost(postId));
+  const updateMutation = useMutation((postId) => updatePost(postId));
 
   if (isLoading) return <h1>로딩중...</h1>;
   if (isError) return <h1>에러 발생: {error.toString()}</h1>;
@@ -48,7 +49,18 @@ export function PostDetail({ post }) {
       {deleteMutation.isSuccess && (
         <p style={{ color: "green" }}>Post deleted!</p>
       )}
-      <button>Update title</button>
+      <button onClick={() => updateMutation.mutate(post.id)}>
+        Update title
+      </button>
+      {updateMutation.isError && (
+        <p style={{ color: "red" }}>Error updating the post</p>
+      )}
+      {updateMutation.isLoading && (
+        <p style={{ color: "purple" }}>Updating the post...</p>
+      )}
+      {updateMutation.isSuccess && (
+        <p style={{ color: "green" }}>Post Updated!</p>
+      )}
       <p>{post.body}</p>
       <h4>Comments</h4>
       {data &&
