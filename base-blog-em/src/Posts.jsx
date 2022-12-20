@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { PostDetail } from "./PostDetail";
 
 const maxPostPage = 10;
@@ -14,10 +14,23 @@ export function Posts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
 
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (currentPage < maxPostPage) {
+      const nextPage = currentPage + 1;
+      queryClient.prefetchQuery(["posts", nextPage], fetchPosts(nextPage));
+    }
+  }, [currentPage, queryClient]);
+
   // replace with useQuery
   const { data, isLoading, isError, error } = useQuery(
     ["posts", currentPage],
-    () => fetchPosts(currentPage)
+    () => fetchPosts(currentPage),
+    {
+      staleTime: 2000,
+      keepPreviousData: true,
+    }
   );
 
   if (isLoading) return <h1>로딩중...</h1>;
@@ -46,7 +59,7 @@ export function Posts() {
         >
           Previous page
         </button>
-        <span>Page {currentPage + 1}</span>
+        <span>Page {currentPage}</span>
         <button
           disabled={currentPage >= maxPostPage}
           onClick={() => {
