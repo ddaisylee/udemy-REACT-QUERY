@@ -1,14 +1,14 @@
 import InfiniteScroll from "react-infinite-scroller";
 import { useInfiniteQuery } from "react-query";
-import { Person } from "./Person";
+import { Pokemon } from "./Pokemon";
 
-const initialUrl = "https://swapi.dev/api/people/";
+const initialUrl = "https://pokeapi.co/api/v2/pokemon";
 const fetchUrl = async (url) => {
   const response = await fetch(url);
   return response.json();
 };
 
-export function InfinitePeople() {
+export function InfinitePokemon() {
   const {
     data,
     fetchNextPage,
@@ -33,13 +33,8 @@ export function InfinitePeople() {
       {isFetching && <div className="loading">로딩중...</div>}
       <InfiniteScroll loadMore={fetchNextPage} hasMore={hasNextPage}>
         {data.pages.map((pageData) =>
-          pageData.results.map((person) => (
-            <Person
-              eyeColor={person.eye_color}
-              hairColor={person.hair_color}
-              name={person.name}
-              key={person.name}
-            />
+          pageData.results.map((pokemon) => (
+            <Pokemon name={pokemon.name} key={pokemon.name} />
           ))
         )}
       </InfiniteScroll>
