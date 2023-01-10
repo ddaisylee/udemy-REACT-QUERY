@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { filter } from '@chakra-ui/system';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { useQuery } from 'react-query';
 
 import type { Staff } from '../../../../../shared/types';
@@ -18,9 +19,16 @@ interface UseStaff {
 }
 
 export function useStaff(): UseStaff {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const [filter, setFilter] = useState('all');
+  const selectFunction = useCallback(
+    (unfilterdStaff) => filterByTreatment(unfilterdStaff, filter),
+    [filter],
+  );
   const fallback = [];
-  const { data: staff = fallback } = useQuery(queryKeys.staff, getStaff);
+  const { data: staff = fallback } = useQuery(queryKeys.staff, getStaff, {
+    select: filter !== 'all' ? selectFunction : undefined,
+  });
 
   return { staff, filter, setFilter };
 }
